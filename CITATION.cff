@@ -10,7 +10,16 @@ authors:
 repository-code: "https://github.com/sparkainlp-x/address-phase-demo"
 url: "https://sparkainlpx.xyz"
 license: AGPL-3.0-only
+doi: "10.5281/zenodo.23129671"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23129671"
+    description: "Concept DOI (all versions, Zenodo)"
+  - type: doi
+    value: "10.5281/zenodo.23129672"
+    description: "Version DOI for v0.1.0 (Zenodo)"
 version: "0.1.0"
+date-released: "2026-10-03"
 abstract: >-
   Single self-contained HTML page (French UI, no external resources). An event
   is identified by its phase address E = (season, shift, machine cycle, block)

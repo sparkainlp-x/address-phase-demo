@@ -3,6 +3,7 @@
 **Un événement est une adresse de phase, pas une date.** `E = (saison, quart, cycle machine, bloc)`. La date peut s’effacer ; l’adresse reste.
 
 [![CI](https://github.com/sparkainlp-x/address-phase-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/sparkainlp-x/address-phase-demo/actions/workflows/ci.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23129671.svg)](https://doi.org/10.5281/zenodo.23129671)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Status: educational prototype](https://img.shields.io/badge/status-educational%20prototype-orange.svg)](#ce-que-ce-nest-pas)
 [![Evidence: SYNTHETIC](https://img.shields.io/badge/evidence-SYNTHETIC-blue.svg)](#ce-que-ce-nest-pas)
@@ -81,4 +82,4 @@ La logique du score n’existe qu’à **un seul endroit** : le bloc `<script id
 
 ## Licence et citation
 
-AGPL-3.0-only ([LICENSE](LICENSE)) ; licence commerciale possible : voir [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md). Pour citer : [CITATION.cff](CITATION.cff). Aucun DOI n’est encore attribué à ce dépôt.
+AGPL-3.0-only ([LICENSE](LICENSE)) ; licence commerciale possible : voir [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md). Pour citer : [CITATION.cff](CITATION.cff). DOI (toutes versions) : [10.5281/zenodo.23129671](https://doi.org/10.5281/zenodo.23129671) ; v0.1.0 : [10.5281/zenodo.23129672](https://doi.org/10.5281/zenodo.23129672).

@@ -4,6 +4,9 @@ All notable changes to this project. Evidence tag: SYNTHETIC (everything here ru
 
 ## Unreleased
 
+### Changed
+- Zenodo DOIs added after the v0.1.0 archive: concept DOI 10.5281/zenodo.23129671 (all versions), version DOI 10.5281/zenodo.23129672 (`CITATION.cff`, README badge, repository homepage). No code change.
+
 ## 0.1.0 — 2026-10-03
 
 ### Added

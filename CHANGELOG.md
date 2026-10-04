@@ -4,7 +4,7 @@ All notable changes to this project. Evidence tag: SYNTHETIC (everything here ru
 
 ## Unreleased
 
-## 0.1.0 — 2026-10-03 (not yet released or archived)
+## 0.1.0 — 2026-10-03
 
 ### Added
 - `Address.html`: self-contained educational page (French UI, no external resources). Phase address `E = (saison, quart, cycle, bloc)`, five concentric SVG rings, sliders (amplitude, bloc 0–15, cycle 0–23, quart), « Lancer la rafale » (deterministic seeded burst, 16 block scores, lit blocks), « Effacer la date » (date wiped, address kept), four preloaded memories (three recur, one does not), a NaN rejection demo and an in-page self-test panel.

@@ -1,0 +1,51 @@
+{
+  "upload_type": "software",
+  "title": "Address: a self-contained educational HTML prototype in which an event is a phase address, not a date",
+  "version": "0.1.0",
+  "description": "<p><strong>Address</strong> is a single self-contained HTML page (French user interface; no CDN, no external fonts, no network requests) that illustrates one idea: an event can be identified by its <em>phase address</em> E = (season, shift, machine cycle, block) rather than by its date. Erasing the date leaves the address intact.</p><p><strong>Score contract.</strong> A synthetic frame of 512 finite values is split into 16 blocks of 32. Each block is scored with S = 0.45·max|x| + 0.35·RMS + 0.20·mean|x| and lights when S &ge; 0.50. The threshold is fixed and never recalibrated; non-finite values are rejected. This is the same block score as the OES32 reference detector in oes-resilience and the classical latch in oes512q-latch. No quantum component enters the score.</p><p><strong>Contents.</strong> Deterministic seeded synthetic bursts, 16 block scores, five concentric rings, a visible date-erasure action, four preloaded memories (three recur, one does not), an in-page self-test, Node tests that execute the page's single score block, and a forbidden-terms scan in CI.</p><p><strong>Limits.</strong> Evidence: SYNTHETIC only. Educational prototype; not a field detector, not NASA evidence, not a certified product, not a grant. The preregistered v0.5.0 evaluation of oes-resilience on the public NASA SMAP/MSL dataset did not meet its success criterion; this page makes no claim about real data.</p>",
+  "creators": [
+    {
+      "name": "Brisson, Jean-François",
+      "affiliation": "Spark AI NLP",
+      "orcid": "0009-0000-9778-5374"
+    }
+  ],
+  "access_right": "open",
+  "license": "agpl-3.0-only",
+  "language": "fra",
+  "keywords": [
+    "phase address",
+    "educational prototype",
+    "block score",
+    "OES-32",
+    "OES-512",
+    "synthetic data",
+    "HTML",
+    "JavaScript"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/sparkainlp-x/address-phase-demo",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "10.5281/zenodo.23071166",
+      "relation": "references",
+      "scheme": "doi",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "10.5281/zenodo.22998570",
+      "relation": "references",
+      "scheme": "doi",
+      "resource_type": "software"
+    }
+  ],
+  "communities": [
+    {
+      "identifier": "spark-ai-nlp"
+    }
+  ],
+  "notes": "Evidence status: SYNTHETIC. Commercial licensing: see COMMERCIAL-LICENSE.md."
+}

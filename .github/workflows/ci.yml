@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["20", "22", "24"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Score contract, self-tests, memories, self-containment (SYNTHETIC)
+        run: node tests/run_tests.js
+
+  forbidden-terms:
+    name: Forbidden-terms scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Scan every tracked file (fails on a banned term)
+        run: python3 tests/forbidden_terms.py
+      - name: The scanner itself fails on a planted banned term
+        run: |
+          git config user.email ci@example.invalid && git config user.name ci
+          # the banned word is assembled at run time so this workflow file itself stays clean
+          printf '%s%s\n' "consc" "ience" > planted.txt && git add planted.txt
+          if python3 tests/forbidden_terms.py; then echo "scanner did not fail"; exit 1; else echo "scanner failed as expected"; fi

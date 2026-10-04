@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Address · adresse de phase (prototype éducatif)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg:#030712; --panel:rgba(15,23,42,.78); --line:rgba(148,163,184,.16); --txt:#e2e8f0; --mut:#94a3b8;
+          --cyan:#22d3ee; --gold:#eab308; --rose:#fb7185; --ok:#4ade80; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace; }
+  body { background: var(--bg); color: var(--txt); font-family: system-ui, -apple-system, "Segoe UI", Roboto, "DejaVu Sans", sans-serif; min-height: 100vh;
+         background-image: radial-gradient(ellipse at 12% 18%, rgba(34,211,238,.08), transparent 42%), radial-gradient(ellipse at 88% 82%, rgba(234,179,8,.06), transparent 46%); }
+  .banner { position: sticky; top: 0; z-index: 10; background: #451a03; color: #fde68a; border-bottom: 1px solid #b45309;
+            text-align: center; padding: 8px 12px; font-size: .86rem; font-weight: 600; }
+  .banner small { display: block; font-weight: 400; color: #fcd34d; font-size: .76rem; margin-top: 2px; }
+  .wrap { max-width: 1220px; margin: 0 auto; padding: 22px 18px 40px; }
+  header { text-align: center; margin-bottom: 18px; }
+  header h1 { font-size: clamp(1.5rem, 3.4vw, 2.2rem); letter-spacing: -.02em; color: #f8fafc; }
+  header h1 b { color: var(--gold); }
+  header p { color: var(--mut); margin-top: 6px; font-size: .92rem; }
+  .grid { display: grid; grid-template-columns: 1.25fr .95fr; gap: 16px; }
+  @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+  h2 { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); margin-bottom: 10px; font-weight: 600; }
+  svg#rings { width: 100%; height: auto; display: block; background: #020617; border-radius: 12px; }
+  .addr { margin-top: 12px; font-family: var(--mono); font-size: 1.02rem; color: #f8fafc; background: #020617;
+          border: 1px solid rgba(234,179,8,.35); border-radius: 10px; padding: 12px; }
+  .datefield { margin-top: 8px; display: flex; gap: 8px; align-items: center; font-size: .82rem; color: var(--mut); }
+  .datefield input { flex: 1; font-family: var(--mono); background: #0b1220; color: #f8fafc; border: 1px solid var(--line);
+                     border-radius: 8px; padding: 7px 9px; font-size: .88rem; transition: all .4s; }
+  .datefield input.erased { color: var(--rose); border-color: var(--rose); background: #1f0a10; }
+  label { display: flex; justify-content: space-between; font-size: .84rem; color: #cbd5e1; margin: 12px 0 6px; }
+  label span { color: var(--cyan); font-family: var(--mono); }
+  input[type=range] { width: 100%; accent-color: var(--cyan); }
+  .row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  button { flex: 1; border: 0; border-radius: 10px; padding: 11px 8px; font: 600 .86rem system-ui, sans-serif; cursor: pointer; }
+  .go { background: linear-gradient(135deg, #0891b2, #22d3ee); color: #082f49; }
+  .ghost { background: #1e293b; color: #cbd5e1; }
+  .warn { background: #3f1d2b; color: #fecdd3; flex-basis: 100%; font-weight: 500; font-size: .78rem; }
+  .card { margin-top: 12px; padding: 11px 13px; border-radius: 12px; background: rgba(6,182,212,.07); border: 1px solid rgba(34,211,238,.18);
+          font-size: .8rem; line-height: 1.5; color: #cbd5e1; }
+  .card strong { color: var(--gold); }
+  .card code { font-family: var(--mono); color: #f8fafc; }
+  .blocks { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-top: 12px; }
+  .blk { background: #0b1220; border: 1px solid var(--line); border-radius: 8px; padding: 6px 4px; text-align: center; font-family: var(--mono); }
+  .blk i { display: block; font-style: normal; font-size: .66rem; color: #64748b; }
+  .blk b { font-size: .82rem; font-weight: 600; color: #cbd5e1; }
+  .blk.lit { background: rgba(234,179,8,.18); border-color: var(--gold); box-shadow: 0 0 12px rgba(234,179,8,.35); }
+  .blk.lit b { color: var(--gold); }
+  .status { margin-top: 10px; font-size: .84rem; font-family: var(--mono); }
+  .status.err { color: var(--rose); }
+  table { width: 100%; border-collapse: collapse; font-size: .78rem; margin-top: 4px; }
+  th, td { text-align: left; padding: 6px 5px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: #64748b; font-weight: 500; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; }
+  td.mono { font-family: var(--mono); }
+  tr.match td { background: rgba(74,222,128,.08); }
+  tr.match td:first-child { box-shadow: inset 3px 0 0 var(--ok); }
+  .pill { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: .72rem; font-weight: 600; white-space: nowrap; }
+  .pill.yes { background: rgba(74,222,128,.15); color: var(--ok); }
+  .pill.idle { background: rgba(34,211,238,.12); color: var(--cyan); }
+  .pill.no { background: rgba(251,113,133,.15); color: var(--rose); }
+  .erasedtxt { color: var(--rose); text-decoration: line-through; }
+  #tests li { list-style: none; font-family: var(--mono); font-size: .78rem; padding: 3px 0; }
+  #tests .p { color: var(--ok); } #tests .f { color: var(--rose); }
+  #testsum { font-family: var(--mono); font-size: .84rem; margin-top: 6px; }
+  .full { grid-column: 1 / -1; }
+  footer { text-align: center; color: #64748b; font-size: .74rem; margin-top: 18px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="banner" role="note">Synthétique — pas un détecteur de terrain, pas une preuve NASA.
+  <small>Prototype éducatif, pas un produit certifié. Données entièrement synthétiques et déterministes.</small></div>
+<div class="wrap">
+  <header>
+    <h1>Address · <b>l’événement est une adresse de phase</b>, pas une date</h1>
+    <p>E = (saison, quart, cycle machine, bloc). La date peut s’effacer ; l’adresse reste.</p>
+  </header>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Cinq anneaux : saison · jour · quart · cycle · bloc</h2>
+      <svg id="rings" viewBox="0 0 660 520" aria-label="Anneaux concentriques de l’adresse de phase"></svg>
+      <div class="addr" id="addr">E = (—)</div>
+      <div class="datefield">Horodatage&nbsp;:<input id="date" type="text" readonly value="—" aria-label="Horodatage synthétique"></div>
+      <div class="blocks" id="blocks"></div>
+      <div class="status" id="status">En attente d’une rafale.</div>
+    </section>
+
+    <aside class="panel">
+      <h2>Commandes</h2>
+      <label for="amp">Amplitude de la rafale <span id="ampL">1.15</span></label>
+      <input id="amp" type="range" min="0.20" max="2.20" step="0.05" value="1.15">
+      <label for="blk">Bloc touché (0–15) <span id="blkL">7</span></label>
+      <input id="blk" type="range" min="0" max="15" step="1" value="7">
+      <label for="cyc">Cycle machine (0–23) <span id="cycL">14</span></label>
+      <input id="cyc" type="range" min="0" max="23" step="1" value="14">
+      <label for="quart">Quart (jour / soir / nuit) <span id="quartL">nuit</span></label>
+      <input id="quart" type="range" min="0" max="2" step="1" value="2">
+      <div class="row">
+        <button class="go" id="fire">« Lancer la rafale »</button>
+        <button class="ghost" id="erase">« Effacer la date »</button>
+        <button class="warn" id="nan">Tester une valeur non finie (NaN) — doit être rejetée</button>
+      </div>
+      <div class="card">
+        <strong>Contrat du score.</strong> Une trame = 512 valeurs finies = 16 blocs de 32.
+        Pour chaque bloc&nbsp;: <code>S = 0.45·max|x| + 0.35·RMS + 0.20·moyenne|x|</code>.
+        Le bloc s’allume si <code>S ≥ 0.50</code>. Seuil fixe, jamais recalibré.
+        Toute valeur non finie (NaN, ±Infini) fait rejeter la trame.
+        Le quantique n’entre pas dans le score.
+      </div>
+      <div class="card">
+        <strong>Rafale synthétique.</strong> Graine déterministe (<span id="seed" style="font-family:var(--mono)">—</span>) :
+        bloc choisi = amplitude × (0.75 + 0.35·u), autres blocs = bruit faible (u − 0.5) × 0.08.
+        Mêmes réglages → même trame, à chaque fois.
+      </div>
+    </aside>
+
+    <section class="panel full">
+      <h2>Mémoires (4 préchargées) — elles reviennent par l’adresse, pas par la date</h2>
+      <table>
+        <thead><tr><th>#</th><th>Date</th><th>Adresse</th><th>S réévalué (bloc)</th><th>Attendu</th><th>État courant</th></tr></thead>
+        <tbody id="mem"></tbody>
+      </table>
+      <div class="card">Le retour compare (quart, cycle, bloc) ; la saison fait partie de l’adresse affichée, mais une mémoire
+        d’une autre saison peut revenir à la même phase. Chaque mémoire est rejouée à partir de sa propre graine et son S est
+        recalculé avec le même contrat (seuil 0.50).</div>
+    </section>
+
+    <section class="panel full">
+      <h2>Auto-test (dans la page)</h2>
+      <ul id="tests"></ul>
+      <div id="testsum"></div>
+    </section>
+  </div>
+
+  <footer>
+    Spark AI NLP · Jean-François Brisson · github.com/sparkainlp-x · prototype « Address » — synthétique, éducatif.<br>
+    Même règle de score que le détecteur de référence OES32 décrit dans les dépôts oes-resilience et oes512q-latch (seuil par défaut 0.50).<br>
+    Sur la télémétrie publique NASA SMAP/MSL, l’évaluation préenregistrée v0.5.0 d’oes-resilience n’a pas atteint son critère de succès.
+    Cette page ne démontre rien sur des données réelles.
+  </footer>
+</div>
+
+<script id="core">
+// ===== Contrat du score (noyau pur, testable hors navigateur) =====
+const FRAME_LEN = 512, BLOCK_LEN = 32, N_BLOCKS = 16;
+const THRESHOLD = 0.50;               // seuil fixe — jamais recalibré
+const W_MAX = 0.45, W_RMS = 0.35, W_MEAN = 0.20;
+
+function assertFinite(values, label) {
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    if (typeof v !== "number" || !Number.isFinite(v)) {
+      throw new RangeError(label + "[" + i + "] non fini (" + String(v) + ") — trame rejetée");
+    }
+  }
+}
+
+function blockScore(values) {
+  if (!values || values.length !== BLOCK_LEN) throw new RangeError("un bloc doit contenir " + BLOCK_LEN + " valeurs");
+  assertFinite(values, "bloc");
+  let peak = 0, sumAbs = 0, sumSq = 0;
+  for (const v of values) { const a = Math.abs(v); if (a > peak) peak = a; sumAbs += a; sumSq += v * v; }
+  return W_MAX * peak + W_RMS * Math.sqrt(sumSq / BLOCK_LEN) + W_MEAN * (sumAbs / BLOCK_LEN);
+}
+
+function scoreFrame(frame) {
+  if (!frame || frame.length !== FRAME_LEN) throw new RangeError("une trame doit contenir " + FRAME_LEN + " valeurs");
+  assertFinite(frame, "trame");
+  const scores = [];
+  for (let b = 0; b < N_BLOCKS; b++) scores.push(blockScore(Array.prototype.slice.call(frame, b * BLOCK_LEN, (b + 1) * BLOCK_LEN)));
+  const lit = scores.map(s => s >= THRESHOLD);
+  return { scores, lit, litBlocks: lit.map((l, i) => l ? i : -1).filter(i => i >= 0) };
+}
+
+// PRNG déterministe (mulberry32) et graine dérivée des réglages
+function mulberry32(a) {
+  return function () { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+function seedOf(block, cycle, quart, amp) {
+  return (42 * 1000003 + block * 7919 + cycle * 104729 + quart * 15485863 + Math.round(amp * 100) * 32452843) >>> 0;
+}
+function makeBurst(block, amp, seed) {
+  const rnd = mulberry32(seed);
+  const x = new Array(FRAME_LEN);
+  for (let i = 0; i < FRAME_LEN; i++) x[i] = (rnd() - 0.5) * 0.08;          // bruit faible partout
+  for (let i = 0; i < BLOCK_LEN; i++) x[block * BLOCK_LEN + i] = amp * (0.75 + 0.35 * rnd()); // rafale dans le bloc choisi
+  return x;
+}
+
+function selfTest() {
+  const R = [];
+  const check = (name, fn) => { let ok = false, info = ""; try { const r = fn(); ok = r === true || (r && r.ok); info = r && r.info ? r.info : ""; } catch (e) { ok = false; info = String(e.message || e); } R.push({ name, ok, info }); };
+  check("trame toute à zéro → aucun bloc allumé", () => { const r = scoreFrame(new Array(512).fill(0)); return { ok: r.litBlocks.length === 0 && r.scores.every(s => s === 0), info: "allumés=" + r.litBlocks.length }; });
+  check("bloc constant 0.5 → S = 0.5 et allumé", () => { const f = new Array(512).fill(0); for (let i = 0; i < 32; i++) f[5 * 32 + i] = 0.5; const r = scoreFrame(f);
+    return { ok: Math.abs(r.scores[5] - 0.5) < 1e-12 && r.lit[5] === true && r.litBlocks.length === 1, info: "S=" + r.scores[5] }; });
+  check("seuil constant = 0.50", () => ({ ok: THRESHOLD === 0.5, info: "THRESHOLD=" + THRESHOLD }));
+  check("512 = 16 × 32", () => ({ ok: FRAME_LEN === 512 && N_BLOCKS * BLOCK_LEN === FRAME_LEN, info: N_BLOCKS + "×" + BLOCK_LEN + "=" + (N_BLOCKS * BLOCK_LEN) }));
+  check("NaN / +Infini / −Infini rejetés", () => { let n = 0; for (const bad of [NaN, Infinity, -Infinity]) { const f = new Array(512).fill(0); f[100] = bad; try { scoreFrame(f); } catch (e) { if (e instanceof RangeError) n++; } } return { ok: n === 3, info: n + "/3 rejetés" }; });
+  check("rafale déterministe (même graine → même trame)", () => { const s = seedOf(7, 14, 2, 1.15); const a = makeBurst(7, 1.15, s), b = makeBurst(7, 1.15, s); return { ok: a.every((v, i) => v === b[i]) }; });
+  check("rafale nuit/14/7 amp 1.15 → seul le bloc 7 s’allume", () => { const r = scoreFrame(makeBurst(7, 1.15, seedOf(7, 14, 2, 1.15))); return { ok: r.litBlocks.length === 1 && r.litBlocks[0] === 7, info: "allumés=[" + r.litBlocks + "]" }; });
+  return R;
+}
+if (typeof module !== "undefined") module.exports = { FRAME_LEN, BLOCK_LEN, N_BLOCKS, THRESHOLD, blockScore, scoreFrame, mulberry32, seedOf, makeBurst, selfTest };
+</script>
+
+<script>
+// ===== Interface =====
+const QUARTS = ["jour", "soir", "nuit"];
+const SAISONS = ["hiver", "printemps", "été", "automne"];
+const $ = id => document.getElementById(id);
+
+function saisonOf(d) { // saisons astronomiques approximatives (hémisphère nord)
+  const m = d.getMonth() + 1, j = d.getDate(), k = m * 100 + j;
+  if (k >= 1221 || k < 320) return "hiver"; if (k < 621) return "printemps"; if (k < 922) return "été"; return "automne";
+}
+// Horodatage synthétique déterministe : base 2026-10-03, quart jour 07h, soir 15h, nuit 23h ; un cycle = 20 min
+function stampOf(quart, cycle, baseDay) {
+  const start = [7, 15, 23][quart];
+  return new Date(2026, 9, baseDay, start, cycle * 20, 0);
+}
+function fmt(d) { const p = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes()); }
+function addrText(e) { return "E = (" + e.saison + ", " + e.quart + ", cycle " + e.cycle + ", bloc " + e.bloc + ")"; }
+function samePhase(a, b) { return a.quart === b.quart && a.cycle === b.cycle && a.bloc === b.bloc; }
+
+// Mémoires : chacune rejouée à partir de sa propre graine
+const MEMORIES = [
+  { date: "2026-01-14 03:40", saison: "hiver",     quart: "nuit", cycle: 14, bloc: 7, amp: 1.00, attendu: "revient" },
+  { date: "2026-04-09 03:40", saison: "printemps", quart: "nuit", cycle: 14, bloc: 7, amp: 1.15, attendu: "revient" },
+  { date: "2026-07-22 03:40", saison: "été",       quart: "nuit", cycle: 14, bloc: 7, amp: 1.30, attendu: "revient" },
+  { date: "2026-09-29 07:40", saison: "automne",   quart: "jour", cycle: 2,  bloc: 3, amp: 0.30, attendu: "ne revient pas" }
+].map(m => { const r = scoreFrame(makeBurst(m.bloc, m.amp, seedOf(m.bloc, m.cycle, QUARTS.indexOf(m.quart), m.amp))); return Object.assign(m, { S: r.scores[m.bloc], lit: r.lit[m.bloc] }); });
+
+let current = null, erased = false;
+
+function readControls() {
+  return { amp: +$("amp").value, bloc: +$("blk").value, cycle: +$("cyc").value, quartIdx: +$("quart").value };
+}
+
+function fire() {
+  const c = readControls();
+  const seed = seedOf(c.bloc, c.cycle, c.quartIdx, c.amp);
+  const frame = makeBurst(c.bloc, c.amp, seed);
+  const res = scoreFrame(frame);
+  const stamp = stampOf(c.quartIdx, c.cycle, 3);
+  current = { seed, res, stamp, saison: saisonOf(stamp), quart: QUARTS[c.quartIdx], cycle: c.cycle, bloc: c.bloc, amp: c.amp, lit: res.lit[c.bloc], error: null };
+  erased = false;
+  render();
+}
+
+function tryNaN() {
+  const c = readControls();
+  const frame = makeBurst(c.bloc, c.amp, seedOf(c.bloc, c.cycle, c.quartIdx, c.amp));
+  frame[c.bloc * 32 + 3] = NaN;
+  try { scoreFrame(frame); $("status").className = "status err"; $("status").textContent = "ERREUR : la valeur NaN n’a pas été rejetée."; }
+  catch (e) { $("status").className = "status err"; $("status").textContent = "Trame rejetée : " + e.message + ". Aucun score calculé."; }
+}
+
+function eraseDate() { erased = true; render(); }
+
+function render() {
+  $("ampL").textContent = (+$("amp").value).toFixed(2);
+  $("blkL").textContent = $("blk").value;
+  $("cycL").textContent = $("cyc").value;
+  $("quartL").textContent = QUARTS[+$("quart").value];
+  const dateEl = $("date");
+  if (!current) { drawRings(null); renderMem(); return; }
+  $("seed").textContent = current.seed;
+  $("addr").textContent = addrText(current);
+  if (erased) { dateEl.value = "░░░░-░░-░░ ░░:░░  (date effacée — l’adresse reste)"; dateEl.classList.add("erased"); }
+  else { dateEl.value = fmt(current.stamp); dateEl.classList.remove("erased"); }
+  $("blocks").innerHTML = current.res.scores.map((s, i) =>
+    '<div class="blk' + (current.res.lit[i] ? " lit" : "") + '"><i>bloc ' + i + '</i><b>' + s.toFixed(3) + '</b></div>').join("");
+  const lb = current.res.litBlocks;
+  $("status").className = "status";
+  $("status").textContent = lb.length
+    ? "Blocs allumés (S ≥ 0.50) : [" + lb.join(", ") + "] — S(bloc " + current.bloc + ") = " + current.res.scores[current.bloc].toFixed(3)
+    : "Aucun bloc allumé : S(bloc " + current.bloc + ") = " + current.res.scores[current.bloc].toFixed(3) + " < 0.50 (seuil inchangé).";
+  drawRings(current);
+  renderMem();
+}
+
+function renderMem() {
+  $("mem").innerHTML = MEMORIES.map((m, i) => {
+    const match = current && current.lit && samePhase(m, current);
+    let etat;
+    if (!m.lit) etat = '<span class="pill no">ne revient pas</span> S = ' + m.S.toFixed(3) + " < 0.50" + (current && !samePhase(m, current) ? " · adresse différente" : "");
+    else if (match) etat = '<span class="pill yes">revient ✓</span> même adresse que l’événement courant';
+    else if (current && !current.lit && samePhase(m, current)) etat = '<span class="pill idle">même adresse, mais l’événement courant n’est pas allumé</span>';
+    else etat = '<span class="pill idle">revient — en attente de son adresse</span>';
+    const date = erased ? '<span class="erasedtxt">' + m.date + '</span> <span style="color:#fb7185">effacée</span>' : m.date;
+    return '<tr class="' + (match ? "match" : "") + '"><td>' + (i + 1) + '</td><td class="mono">' + date + '</td><td class="mono">' + addrText(m) +
+      '</td><td class="mono">' + m.S.toFixed(3) + (m.lit ? " ≥ 0.50" : " < 0.50") + '</td><td>« ' + m.attendu + ' »</td><td>' + etat + '</td></tr>';
+  }).join("");
+}
+
+// ----- Anneaux SVG -----
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function arcPath(cx, cy, r0, r1, a0, a1) {
+  const p = (r, a) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  const [x0, y0] = p(r1, a0), [x1, y1] = p(r1, a1), [x2, y2] = p(r0, a1), [x3, y3] = p(r0, a0);
+  const large = a1 - a0 > Math.PI ? 1 : 0;
+  return "M" + x0 + " " + y0 + " A" + r1 + " " + r1 + " 0 " + large + " 1 " + x1 + " " + y1 + " L" + x2 + " " + y2 + " A" + r0 + " " + r0 + " 0 " + large + " 0 " + x3 + " " + y3 + " Z";
+}
+function drawRings(ev) {
+  const svg = $("rings"); svg.innerHTML = "";
+  const cx = 262, cy = 260;
+  const dayIdx = ev ? ev.stamp.getDate() - 1 : -1;
+  const rings = [
+    { name: "saison", n: 4,  r0: 206, r1: 238, color: "#94a3b8", idx: ev ? SAISONS.indexOf(ev.saison) : -1, labels: SAISONS },
+    { name: "jour",   n: 31, r0: 170, r1: 200, color: "#eab308", idx: ev && !erased ? dayIdx : -1, dim: erased },
+    { name: "quart",  n: 3,  r0: 132, r1: 164, color: "#fb7185", idx: ev ? QUARTS.indexOf(ev.quart) : -1, labels: QUARTS },
+    { name: "cycle",  n: 24, r0: 94,  r1: 126, color: "#22d3ee", idx: ev ? ev.cycle : -1 },
+    { name: "bloc",   n: 16, r0: 56,  r1: 88,  color: "#4ade80", idx: ev ? ev.bloc : -1, litSet: ev ? ev.res.lit : null }
+  ];
+  const gap = 0.012;
+  rings.forEach(ring => {
+    for (let k = 0; k < ring.n; k++) {
+      const a0 = -Math.PI / 2 + k * 2 * Math.PI / ring.n + gap, a1 = -Math.PI / 2 + (k + 1) * 2 * Math.PI / ring.n - gap;
+      const on = k === ring.idx;
+      const litOther = ring.litSet && ring.litSet[k] && !on;
+      el("path", { d: arcPath(cx, cy, ring.r0, ring.r1, a0, a1), fill: on ? ring.color : (litOther ? "rgba(234,179,8,.55)" : "rgba(148,163,184,.07)"),
+        stroke: on ? "#f8fafc" : "rgba(148,163,184,.18)", "stroke-width": on ? 1.6 : .6, "stroke-dasharray": ring.dim ? "3 3" : "none",
+        opacity: ring.dim ? .45 : 1 }, svg);
+      if (ring.labels) {
+        const am = (a0 + a1) / 2, rm = (ring.r0 + ring.r1) / 2;
+        const t = el("text", { x: cx + rm * Math.cos(am), y: cy + rm * Math.sin(am) + 4, "text-anchor": "middle", "font-size": 11,
+          fill: on ? "#020617" : "#94a3b8", "font-weight": on ? 700 : 400, "font-family": "system-ui, sans-serif" }, svg);
+        t.textContent = ring.labels[k];
+      }
+    }
+    // étiquette de l’anneau (à droite)
+    const ly = { saison: 40, jour: 70, quart: 100, cycle: 130, bloc: 160 }[ring.name];
+    el("line", { x1: cx + ring.r1 - 4, y1: cy - 2, x2: 518, y2: ly, stroke: "rgba(148,163,184,.25)", "stroke-width": .6 }, svg);
+    el("circle", { cx: 524, cy: ly - 4, r: 4, fill: ring.color, opacity: ring.dim ? .4 : 1 }, svg);
+    let val = "—";
+    if (ev) val = ring.name === "saison" ? ev.saison : ring.name === "jour" ? (erased ? "effacé" : "j" + (dayIdx + 1)) :
+      ring.name === "quart" ? ev.quart : ring.name === "cycle" ? String(ev.cycle) : String(ev.bloc);
+    const t = el("text", { x: 534, y: ly, "font-size": 12, fill: ring.dim ? "#fb7185" : "#cbd5e1", "font-family": "ui-monospace, monospace" }, svg);
+    t.textContent = ring.name + " " + val;
+  });
+  const c = el("text", { x: cx, y: cy - 2, "text-anchor": "middle", "font-size": 15, "font-weight": 700, fill: ev && ev.lit ? "#eab308" : "#64748b", "font-family": "system-ui, sans-serif" }, svg);
+  c.textContent = ev ? (ev.lit ? "ALLUMÉ" : "CALME") : "—";
+  const c2 = el("text", { x: cx, y: cy + 16, "text-anchor": "middle", "font-size": 11, fill: "#94a3b8", "font-family": "ui-monospace, monospace" }, svg);
+  c2.textContent = ev ? "S=" + ev.res.scores[ev.bloc].toFixed(3) : "";
+  const foot = el("text", { x: 20, y: 505, "font-size": 12, fill: erased ? "#fb7185" : "#94a3b8", "font-family": "system-ui, sans-serif" }, svg);
+  foot.textContent = erased ? "Date effacée : l’anneau « jour » s’éteint, les quatre coordonnées de l’adresse restent." : "Segments clairs = adresse courante ; or = autres blocs allumés.";
+}
+
+function runSelfTests() {
+  const R = selfTest();
+  $("tests").innerHTML = R.map(r => '<li class="' + (r.ok ? "p" : "f") + '">' + (r.ok ? "✔ RÉUSSI" : "✘ ÉCHEC") + " — " + r.name + (r.info ? "  (" + r.info + ")" : "") + "</li>").join("");
+  const n = R.filter(r => r.ok).length;
+  $("testsum").innerHTML = '<span class="' + (n === R.length ? "p" : "f") + '" style="color:' + (n === R.length ? "#4ade80" : "#fb7185") + '">' + n + "/" + R.length + " tests réussis</span>";
+  document.body.setAttribute("data-selftest", n + "/" + R.length);
+}
+
+["amp", "blk", "cyc", "quart"].forEach(id => $(id).addEventListener("input", () => render()));
+$("fire").addEventListener("click", fire);
+$("erase").addEventListener("click", eraseDate);
+$("nan").addEventListener("click", tryNaN);
+runSelfTests();
+fire();
+</script>
+</body>
+</html>
